@@ -7,6 +7,13 @@ m_ser(serial)
 		this->m_ser = serial;
 }
 
+iBus::iBus(SoftwareSerial& serial):
+m_ser(serial)
+{
+		serial.begin(115200);
+		this->m_ser = serial;
+}
+
 int iBus::get_channel(int ch)
 {
 	return m_channel[ch];
@@ -71,4 +78,9 @@ void iBus::m_parse_channels(uint8_t packet[], int ch[])
 	{
 		ch[i] = packet[i*2+2] << 8 | packet[i*2+1]; // Store get channel values
 	}
+}
+
+uint32_t iBus::time_since_last()
+{
+	return millis() - m_last_iBus_packet;
 }

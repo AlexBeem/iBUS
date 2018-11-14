@@ -39,6 +39,7 @@ void print_channels()
         Serial.println(" !!LINK DEAD!!");
       }
     }
+    Serial.print(ibus.time_since_last());
     Serial.println();
   }
 }

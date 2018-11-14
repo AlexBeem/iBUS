@@ -2,24 +2,28 @@
 
 #include <Arduino.h>
 #include <HardwareSerial.h>
+#include <SoftwareSerial.h>
 
 class iBus
 {
 public:
     iBus(HardwareSerial& serial);
+    iBus(SoftwareSerial& serial);
     
     int get_channel(int ch);
     bool is_alive();
     void handle();
 
+    uint32_t time_since_last();
+
 private:
 
-    HardwareSerial& m_ser;
+    Stream& m_ser;
 
     const static int m_packet_size = 31;
     const static int m_channels_per_packet = 14;
 
-    const static int m_timeout = 100; // If no iBUS packet has been recieved in this time, consider the TX off
+    const static int m_timeout = 25; // If no iBUS packet has been recieved in this time, consider the TX off
 
     uint32_t m_last_iBus_packet = 0;
 
