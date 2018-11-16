@@ -1,4 +1,4 @@
-#include <ibus.h>
+#include <iBUS.h>
 
 iBus::iBus(HardwareSerial& serial):
 m_ser(serial)
