@@ -33,10 +33,12 @@ void print_channels()
       if(ibus.is_alive())
       {
         Serial.println();
+        digitalWrite(13, LOW);
       }
       else
       {
         Serial.println(" !!LINK DEAD!!");
+        digitalWrite(13, HIGH);
       }
     }
     Serial.print(ibus.time_since_last());
