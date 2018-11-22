@@ -1,3 +1,3 @@
-#iBUS Arduino library
+# iBUS Arduino library
 
 A library for arduino to read iBUS data. 
