@@ -7,44 +7,89 @@
 class iBus
 {
 public:
+
+    /**
+     * Constructor for the class. Takes either a HardwareSerial or SoftwareSerial class
+     */
     iBus(HardwareSerial& serial);
     iBus(SoftwareSerial& serial);
     
+    /**
+     * A getter to get recieved channel values
+     * @param ch An integer value to pick channel, 0-13
+     */
     int get_channel(int ch);
+
+    /**
+     * A method to set transmitted channel values
+     * @param ch An integer value to pick channel, 0-13
+     * @param val An integer value to send on this channel
+     */
     void set_channel(int ch, int val);
 
+    /**
+     * @return true if valid packet has been recieved recently, defined by m_timeout. Otherwise false. 
+     */
     bool is_alive();
+
+    /**
+     * The main ticker function for the class. Handles any buffered incomming bytes, 
+     */
     void handle(unsigned int timeout = 10);
 
+    /**
+     * @return The time since last valid iBUS packet
+     */
     uint32_t time_since_last();
 
 private:
 
     Stream& m_ser;
 
-    const static int m_packet_size = 31;
+    // The extra bytes used for non-data in the packets.
+    // One start byte and 2 CRC bytes
+    const static int m_packet_overhead = 3;
+
+    // Number of channels sent per packet
     const static int m_channels_per_packet = 14;
 
-    const static int m_timeout = 25; // If no iBUS packet has been recieved in this time, consider the TX off
+    // Size of a packet
+    const static int m_packet_size = 2*m_channels_per_packet + m_packet_overhead;
 
+    // Max time between packets
+    const static int m_timeout = 25; // If no iBUS packet has been recieved in this time, consider the TX off
     uint32_t m_last_iBus_packet = 0;
 
+    // Buffer for recieving packets
     uint8_t m_packet[m_packet_size];
-    uint8_t m_last_packet[m_packet_size];
-
+    
+    // Array of recieved channel values
     int m_channel[m_channels_per_packet];
+
+    // Array of channel values to send
     int m_channel_out[m_channels_per_packet];
 
+    // Flag signifying if currently in a packet
     bool m_in_packet = false;
+    
+    // Current index of packet
     int m_packet_offset = 0;
 
+    // Returns sum of all channel values
     int  m_get_checksum(int ch[]);
-    bool m_checksum_check(uint8_t packet[]);
-    void m_parse_channels(uint8_t packet[], int ch[]);
-    void m_copy_array(uint8_t src[], uint8_t dst[], int dst_size = 0);
 
-    unsigned int m_minimum_packet_spacing = 10; // Minimum space between sent packages in ms
+    // Checks if checksum matches recieved data
+    bool m_checksum_check(uint8_t packet[]);
+
+    // Parses channel values from raw packet
+    void m_parse_channels(uint8_t packet[], int ch[]);
+
+    // Rate limiting for sending packets in ms
+    unsigned int m_minimum_packet_spacing = 10;
+
     uint32_t m_last_packet_sent = 0;
+
+    // Builds packet and sends it
     void m_send_packet(int ch[]);
     
 };
