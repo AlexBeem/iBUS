@@ -35,17 +35,22 @@ bool iBus::is_alive()
 
 void iBus::handle(unsigned int timeout)
 {
+
+	// If bytes are waiting in the serial buffer, process them
+	// but don't loop for more than timeout ms
 	uint32_t start = millis();
 	while(m_ser.available() && millis()-start < timeout)
 	{
 		uint8_t c = m_ser.read();
 
-		if(!m_in_packet && c == 0x55)
+		// If header byte recieved outside of packet, start a new packet
+		if(!m_in_packet && c == 0x55) 
 		{
 			m_in_packet = true;
 			m_packet_offset = 0;
 		}
 
+		// If m_packet_size bytes have been recieved, end packet and parse it
 		if(m_packet_offset >= m_packet_size-1 && m_in_packet)
 		{
 			m_in_packet = false;
@@ -60,12 +65,15 @@ void iBus::handle(unsigned int timeout)
 			m_packet[0] = 0x00; // Meant to signify error/no packet
 		}
 		
+		// If in a packet, store byte and increment m_packet_offset
 		if(m_in_packet)
 		{
-			m_packet[m_packet_offset++] = c; // Save byte and iterate offset
+			m_packet[m_packet_offset++] = c;
 		}
 	}
 
+	// If the link is alive (recieved valid packets recently), 
+	// and over m_minimum_packet_spacing since last sent packet. Send a packet
 	if(is_alive() && millis() - m_last_packet_sent > m_minimum_packet_spacing)
 	{
 		m_last_packet_sent = millis();
@@ -75,9 +83,12 @@ void iBus::handle(unsigned int timeout)
 
 void iBus::m_send_packet(int ch[])
 {
-	uint8_t buff[1+ m_channels_per_packet*2 +2];
+	// Set up buffer and set header byte
+	uint8_t buff[m_packet_size];
 	buff[0] = 0x55;
 
+	// For each channel, unpack 16 bit integer into bytes
+	// The values are sent LSB first, MSb first.
 	for(int i=0; i<m_channels_per_packet; i++)
 	{
 		buff[i*2+1] = (ch[i] & 0x00FF);
@@ -88,9 +99,10 @@ void iBus::m_send_packet(int ch[])
 	buff[29] = (checksum & 0x00FF);
 	buff[30] = (checksum >> 8);
 
-	m_ser.write(buff, 1+ m_channels_per_packet*2 +2);
+	m_ser.write(buff, m_packet_size);
 }
 
+// Checksum is a simple sum of channel values
 int iBus::m_get_checksum(int ch[])
 {
 	int sum = 0;
@@ -112,9 +124,11 @@ bool iBus::m_checksum_check(uint8_t packet[])
 
 void iBus::m_parse_channels(uint8_t packet[], int ch[])
 {
+	// For each channel, store 2 bytes in 16bit integer
+	// The values are sent MSb first, LSB first
 	for(int i=0; i<m_channels_per_packet; i++)
 	{
-		ch[i] = packet[i*2+2] << 8 | packet[i*2+1]; // Store get channel values
+		ch[i] = packet[i*2+2] << 8 | packet[i*2+1];
 	}
 }
 
