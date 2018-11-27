@@ -28,6 +28,19 @@ public:
     void set_channel(int ch, int val);
 
     /**
+     * A method to set the minumum time between sending ibus packets
+     * @param val The minimum time in ms between transmitting ibus packets
+     */
+    void set_tx_period(unsigned int val);
+
+    /**
+     * A method to set the maximum time between recieving ibus packets to 
+     * consider the connection active
+     * @param timeout The maximum time in ms between recieving ibus packets
+     */
+    void set_alive_timeout(unsigned int timeout);
+
+    /**
      * @return true if valid packet has been recieved recently, defined by m_timeout. Otherwise false. 
      */
     bool is_alive();
@@ -57,7 +70,7 @@ private:
     const static int m_packet_size = 2*m_channels_per_packet + m_packet_overhead;
 
     // Max time between packets
-    const static int m_timeout = 25; // If no iBUS packet has been recieved in this time, consider the TX off
+    unsigned int m_timeout = 25; // If no iBUS packet has been recieved in this time, consider the TX off
     uint32_t m_last_iBus_packet = 0;
 
     // Buffer for recieving packets

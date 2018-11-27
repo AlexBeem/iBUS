@@ -24,6 +24,16 @@ void iBus::set_channel(int ch, int val)
 	m_channel_out[ch] = val;
 }
 
+void iBus::set_tx_period(unsigned int val)
+{
+	m_minimum_packet_spacing = val;
+}
+
+void iBus::set_alive_timeout(unsigned int timeout)
+{
+	m_timeout = timeout;
+}
+
 bool iBus::is_alive()
 {
 	if(millis() - m_last_iBus_packet < m_timeout)
