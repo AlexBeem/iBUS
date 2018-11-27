@@ -8,11 +8,20 @@ iBus ibus(sw_ser);
 // If you are on a board with multiple hardware serial, you can use that instead
 // iBus ibus(Serial2);
 
+// Currently, recivers transmit 14 channels over iBUS, with the inactive channels set to 1500
+int channels_per_packet = 14;
+
 void setup() 
 {
   Serial.begin(115200);
   while(!Serial) // On USB CDC serial ports, wait for the serial connection.
   {;}
+
+  // Set timeout between recieved packets to 20 ms before considering it a lost connection
+  ibus.set_alive_timeout(20);
+
+  // Set minimum time between transmitting packets, to 5ms
+  ibus.set_tx_period(5);
 
   pinMode(LED_BUILTIN, OUTPUT);
 
@@ -22,6 +31,24 @@ void setup()
 void loop() 
 {
   ibus.handle(); // Run this often
+  
+  // Reduce all channels by 50%
+  for(int i=0; i<channels_per_packet; i++)
+  {
+    // Get how far away from the center position the channel is
+    int distance_to_center = ibus.get_channel(i) - 1500;
+
+    // Reduce maximum throw by 50%
+    int new_distance_to_center = map(distance_to_center, -500, 500, -250, 250);
+
+    // Set the new value to be re-transmitted
+    ibus.set_channel(i, new_distance_to_center + 1500);
+  }
+
+  // The above will mess with the throttle, so fix the throttle channel seperately
+  // Channels are zero-indexed
+  ibus.set_channel(2, map(ibus.get_channel(2), 1000, 2000, 1000, 1500));
+
   print_channels();
 }
 
