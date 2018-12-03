@@ -1,7 +1,12 @@
+/*
+ * This example will receieve iBUS packets, and then re-transmit them
+ * but with their values at 50%. For all channels but 3 (throttle)
+ * this is still centered on 1500
+ */
+
 #include "iBUS.h"
 #include <SoftwareSerial.h>
 
-// Rx on pin 10. The library currently doesn't support TX, but SoftwareSerial needs a tx pin
 SoftwareSerial sw_ser = SoftwareSerial(10, 11); 
 iBus ibus(sw_ser);
 
@@ -35,18 +40,17 @@ void loop()
   // Reduce all channels by 50%
   for(int i=0; i<channels_per_packet; i++)
   {
-    // Get how far away from the center position the channel is
-    int distance_to_center = ibus.get_channel(i) - 1500;
+    int old_value = ibus.get_channel(i);
 
-    // Reduce maximum throw by 50%
-    int new_distance_to_center = map(distance_to_center, -500, 500, -250, 250);
+    // map the old value (1000 to 2000) to a new value going from 1250 to 1750
+    int new_value = map(old_value, 1000, 2000, 1250, 1750);
 
-    // Set the new value to be re-transmitted
-    ibus.set_channel(i, new_distance_to_center + 1500);
+    // Set this new value to be sent on the next handle()
+    ibus.set_channel(i, new_value);
   }
 
   // The above will mess with the throttle, so fix the throttle channel seperately
-  // Channels are zero-indexed
+  // Channels are zero-indexed.
   ibus.set_channel(2, map(ibus.get_channel(2), 1000, 2000, 1000, 1500));
 
   print_channels();
