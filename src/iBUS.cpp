@@ -24,6 +24,11 @@ void iBus::set_channel(int ch, int val)
 	m_channel_out[ch] = val;
 }
 
+int iBus::get_tx_channel(int ch)
+{
+	return m_channel_out[ch];
+}
+
 void iBus::set_tx_period(unsigned int val)
 {
 	m_minimum_packet_spacing = val;

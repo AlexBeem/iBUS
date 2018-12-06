@@ -28,6 +28,12 @@ public:
     void set_channel(int ch, int val);
 
     /**
+     * A method to get transmitted channel values
+     * @param ch An integer value to pick channel, 0-13
+     */
+    int get_tx_channel(int ch);
+
+    /**
      * A method to set the minumum time between sending ibus packets
      * @param val The minimum time in ms between transmitting ibus packets
      */
