@@ -63,6 +63,19 @@ void iBus::handle(unsigned int timeout)
 		{
 			m_in_packet = true;
 			m_packet_offset = 0;
+			
+			// If the next byte is also 0x55, it's most likely an error
+			// but there are 4 valid values it could be.
+			if(m_ser.peek() == 0x55)
+			{
+				m_ser.read();
+				if(m_ser.peek() >= 4 && m_ser.peek() <=7)
+				{ // Valid packet, let's clean up a bit
+					m_packet[0] = 0x55;
+					m_packet[1] = 0x55;
+					m_packet_offset = 2;
+				}
+			}
 		}
 
 		// If m_packet_size bytes have been recieved, end packet and parse it
