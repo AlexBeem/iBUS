@@ -58,7 +58,7 @@ void iBus::handle(unsigned int timeout)
 	{
 		uint8_t c = m_ser.read();
 
-		// If header byte recieved outside of packet, start a new packet
+		// If header byte received outside of packet, start a new packet
 		if(!m_in_packet && c == 0x55) 
 		{
 			m_in_packet = true;
@@ -78,7 +78,7 @@ void iBus::handle(unsigned int timeout)
 			}
 		}
 
-		// If m_packet_size bytes have been recieved, end packet and parse it
+		// If m_packet_size bytes have been received, end packet and parse it
 		if(m_packet_offset >= m_packet_size-1 && m_in_packet)
 		{
 			m_in_packet = false;
@@ -100,7 +100,7 @@ void iBus::handle(unsigned int timeout)
 		}
 	}
 
-	// If the link is alive (recieved valid packets recently), 
+	// If the link is alive (received valid packets recently), 
 	// and over m_minimum_packet_spacing since last sent packet. Send a packet
 	if(is_alive() && millis() - m_last_packet_sent > m_minimum_packet_spacing)
 	{
