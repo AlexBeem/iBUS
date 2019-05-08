@@ -1,5 +1,5 @@
 /*
- * This example will receieve iBUS packets, and then re-transmit them
+ * This example will receive iBUS packets, and then re-transmit them
  * but with their values at 50%. For all channels but 3 (throttle)
  * this is still centered on 1500
  */
@@ -22,7 +22,7 @@ void setup()
   while(!Serial) // On USB CDC serial ports, wait for the serial connection.
   {;}
 
-  // Set timeout between recieved packets to 20 ms before considering it a lost connection
+  // Set timeout between received packets to 20 ms before considering it a lost connection
   ibus.set_alive_timeout(20);
 
   // Set minimum time between transmitting packets, to 5ms
@@ -49,7 +49,7 @@ void loop()
     ibus.set_channel(i, new_value);
   }
 
-  // The above will mess with the throttle, so fix the throttle channel seperately
+  // The above will mess with the throttle, so fix the throttle channel separately
   // Channels are zero-indexed.
   ibus.set_channel(2, map(ibus.get_channel(2), 1000, 2000, 1000, 1500));
 
@@ -80,6 +80,6 @@ void print_channels()
         digitalWrite(LED_BUILTIN, HIGH);
       }
     }
-    Serial.print("Last valid packet was recieved "); Serial.print(ibus.time_since_last()); Serial.println(" ms ago");
+    Serial.print("Last valid packet was received "); Serial.print(ibus.time_since_last()); Serial.println(" ms ago");
   }
 }
