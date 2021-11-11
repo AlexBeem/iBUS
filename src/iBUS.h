@@ -13,7 +13,7 @@ public:
      * Constructor for the class. Takes either a HardwareSerial or SoftwareSerial class
      */
     iBus(HardwareSerial& serial);
-    iBus(SoftwareSerial& serial);
+   // iBus(SoftwareSerial& serial);
     iBus(AltSoftSerial& serial);
     
     /**
