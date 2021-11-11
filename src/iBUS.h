@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 #include <HardwareSerial.h>
-#include <SoftwareSerial.h>
+//#include <SoftwareSerial.h>
 #include <AltSoftSerial.h>
 
 class iBus
