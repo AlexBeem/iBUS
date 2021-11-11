@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <HardwareSerial.h>
 #include <SoftwareSerial.h>
+#include <AltSoftSerial.h>
 
 class iBus
 {
@@ -13,6 +14,7 @@ public:
      */
     iBus(HardwareSerial& serial);
     iBus(SoftwareSerial& serial);
+    iBus(AltSoftSerial& serial);
     
     /**
      * A getter to get received channel values
