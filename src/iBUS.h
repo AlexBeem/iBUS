@@ -2,8 +2,7 @@
 
 #include <Arduino.h>
 #include <HardwareSerial.h>
-//#include <SoftwareSerial.h>
-#include <SoftSerial.h>
+#include <SoftwareSerial.h>
 
 class iBus
 {
@@ -14,7 +13,7 @@ public:
      */
     iBus(HardwareSerial& serial);
    // iBus(SoftwareSerial& serial);
-    iBus(SoftSerial& serial);
+    iBus(SoftwareSerial& serial);
     
     /**
      * A getter to get received channel values
